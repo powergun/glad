@@ -7,7 +7,7 @@
 
 
 {% macro context_arg(suffix='', def='') -%}
-{{ 'Glad' + feature_set.api|api + 'Context *context' + suffix if options.mx else def }}
+{{ 'Glad' + feature_set.name|api + 'Context *context' + suffix if options.mx else def }}
 {%- endmacro %}
 
 
