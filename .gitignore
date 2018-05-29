@@ -1,5 +1,5 @@
 *.pyc
-*.xml
+/*.xml
 *.kdev4
 build/
 *.o
@@ -10,5 +10,5 @@ main.c
 .idea
 dist/
 *.egg-info
-khrplatform.h
-eglplatform.h
+/khrplatform.h
+/eglplatform.h

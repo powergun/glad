@@ -43,7 +43,7 @@ class Generator(object):
 
     def __init__(self, path, spec, api, extension_names=None, loader=None,
                  opener=None, local_files=False, omit_khrplatform=False,
-                 header_template=HEADER_TEMPLATE):
+                 header_template=HEADER_TEMPLATE, **options):
         self.path = os.path.abspath(path)
 
         self.spec = spec
@@ -67,6 +67,8 @@ class Generator(object):
 
         self.local_files = local_files
         self.omit_khrplatform = omit_khrplatform
+
+        self.options = options
 
         self._header_template = header_template
 

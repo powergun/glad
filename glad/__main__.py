@@ -10,6 +10,7 @@ import logging
 from glad.opener import URLOpener
 from glad.spec import SPECS
 import glad.lang
+import glad.files
 from glad.util import Version
 
 logger = logging.getLogger('glad')
@@ -22,17 +23,22 @@ def main():
 
     opener = URLOpener()
 
-    def get_spec(value):
+    def get_spec(value, download=False):
         if value not in SPECS:
             raise argparse.ArgumentTypeError('Unknown specification')
 
         spec_cls = SPECS[value]
 
+        if download:
+            logger.info('downloading latest \'%s\' specification', value)
+            return spec_cls.from_remote(opener=opener)
+
         if os.path.exists(value + '.xml'):
             logger.info('using local specification: \'%s.xml\'', value)
             return spec_cls.from_file(value + '.xml')
-        logger.info('getting \'%s\' specification from SVN', value)
-        return spec_cls.from_svn(opener=opener)
+
+        logger.info('using packaged specification: \'%s.xml\'', value)
+        return spec_cls.from_file(glad.files.get_local_path(value + '.xml'))
 
     def ext_file(value):
         msg = 'Invalid extensions argument'
@@ -98,6 +104,8 @@ def main():
     parser.add_argument('--spec', dest='spec', default='gl',
                         choices=['gl', 'egl', 'glx', 'wgl'],
                         help='Name of the spec')
+    parser.add_argument('--latest-spec', default=False, action='store_true',
+                        help='Downloads and uses the latest specifications')
     parser.add_argument('--no-loader', dest='no_loader', action='store_true')
     parser.add_argument('--omit-khrplatform', dest='omit_khrplatform', action='store_true',
                         help='Omits inclusion of the khrplatform.h '
@@ -120,7 +128,7 @@ def main():
             datefmt='%m/%d/%Y %H:%M:%S', level=logging.DEBUG
         )
 
-    spec = get_spec(ns.spec)
+    spec = get_spec(ns.spec, download=ns.latest_spec)
     if spec.NAME == 'gl':
         spec.profile = ns.profile
 
@@ -146,7 +154,8 @@ def main():
             loader=loader,
             opener=opener,
             local_files=ns.local_files,
-            omit_khrplatform=ns.omit_khrplatform
+            omit_khrplatform=ns.omit_khrplatform,
+            latest_spec=ns.latest_spec
     ) as generator:
         generator.generate()
 
