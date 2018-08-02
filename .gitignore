@@ -14,3 +14,7 @@ khrplatform.h
 eglplatform.h
 
 glad-rs/
+rust/
+target/
+Cargo.lock
+
